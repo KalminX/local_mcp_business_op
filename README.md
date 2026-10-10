@@ -36,6 +36,22 @@ This application runs **100% locally** on your computer without Claude, OpenAI, 
 
 ---
 
+## 📸 Application Preview & Interface Tour
+
+| Operations Agent & Live MCP Drawer | Multi-Tool Cross-System Analysis |
+|:---:|:---:|
+| ![Operations Agent](screenshots/01_operations_chat.png) | ![Cross System Analysis](screenshots/02_cross_system_analysis.png) |
+
+| Secure Approval Workflow Card | Business Hub Data Explorer |
+|:---:|:---:|
+| ![Approval Workflow](screenshots/03_approval_workflow.png) | ![Business Hub](screenshots/04_business_hub.png) |
+
+| Tamper-Evident System Audit Trail |
+|:---:|
+| ![System Audit Trail](screenshots/05_audit_logs.png) |
+
+---
+
 ## 🌟 Key Features
 
 1. **Genuine Model Context Protocol (MCP) SDK Server**:
