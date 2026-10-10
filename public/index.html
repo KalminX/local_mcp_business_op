@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local MCP Business Operations Agent</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Prominent Mock Mode Banner -->
+  <div class="banner-mock-agent">
+    <span class="pulse-dot"></span>
+    <strong>LOCAL MOCK AGENT — NO REAL AI CONNECTED</strong>
+    <span class="banner-sep">|</span>
+    <span>Powered by Genuine Model Context Protocol (MCP) Tools & SQLite Business Engine</span>
+  </div>
+
+  <!-- Top Header Navigation -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">
+        <h1>OpsPilot MCP</h1>
+        <span class="badge-env">Localhost 3000</span>
+      </div>
+    </div>
+
+    <!-- View Switcher Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="tab-chat">
+        <span class="tab-icon">💬</span> Operations Agent
+      </button>
+      <button class="nav-tab" data-tab="tab-data">
+        <span class="tab-icon">📊</span> Business Hub
+      </button>
+      <button class="nav-tab" data-tab="tab-approvals">
+        <span class="tab-icon">⏳</span> Pending Approvals
+        <span id="pending-count-badge" class="count-badge hidden">0</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-audit">
+        <span class="tab-icon">📜</span> Audit Logs
+      </button>
+    </nav>
+
+    <!-- User & Session Controls -->
+    <div class="header-right">
+      <div class="user-profile-badge" id="user-profile-container">
+        <span class="user-avatar" id="user-avatar">👤</span>
+        <div class="user-details">
+          <span class="user-name" id="user-full-name">Loading...</span>
+          <span class="user-role-badge" id="user-role-badge">STAFF</span>
+        </div>
+      </div>
+
+      <div class="user-switch-dropdown">
+        <select id="user-switch-select" title="Switch Demo Account">
+          <option value="admin">Admin (Sarah Chen)</option>
+          <option value="staff" selected>Staff (Marcus Rodriguez)</option>
+          <option value="readonly">Read-Only (Alex Taylor)</option>
+        </select>
+      </div>
+
+      <button id="btn-reset-db" class="btn btn-secondary btn-sm" title="Deterministic database reset">
+        🔄 Reset DB
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Container -->
+  <main class="main-content">
+    
+    <!-- TAB 1: OPERATIONS AGENT / CHAT -->
+    <section id="tab-chat" class="tab-content active">
+      <div class="chat-layout">
+        <div class="chat-main-panel">
+          <!-- Suggestion Chips -->
+          <div class="prompt-chips-bar">
+            <span class="chips-label">Quick Prompts:</span>
+            <button class="chip" data-prompt="Which clients have overdue invoices?">🚨 Overdue Invoices</button>
+            <button class="chip" data-prompt="Which clients have overdue invoices and active projects?">🔍 Cross-System Join</button>
+            <button class="chip" data-prompt="Show me the details of invoice INV-1002">🧾 Details INV-1002</button>
+            <button class="chip" data-prompt="Show the current status of the Atlas migration project">📊 Atlas Project Status</button>
+            <button class="chip" data-prompt="List all open tasks for Acme Corp">📌 Tasks for Acme</button>
+            <button class="chip write-chip" data-prompt="Create a follow-up task for the client with the most overdue invoice">⚡ Create Follow-up (Write)</button>
+            <button class="chip write-chip" data-prompt="Update the Atlas migration project to blocked">🔄 Block Atlas Project (Write)</button>
+            <button class="chip write-chip" data-prompt="Add a note to Acme Corp: Payment promised by next Tuesday">📝 Add Client Note (Write)</button>
+          </div>
+
+          <!-- Chat Conversation Log -->
+          <div class="chat-messages" id="chat-messages">
+            <!-- Welcome message injected dynamically -->
+          </div>
+
+          <!-- Chat Input Area -->
+          <div class="chat-input-container">
+            <form id="chat-form" class="chat-form">
+              <input 
+                type="text" 
+                id="chat-input" 
+                class="chat-input" 
+                placeholder="Ask a question or request an operation (e.g. 'Which clients have overdue invoices?')..."
+                autocomplete="off"
+              />
+              <button type="submit" id="btn-send-chat" class="btn btn-primary">
+                <span>Send</span> ➔
+              </button>
+            </form>
+            <div class="input-hint">
+              <span>💡 Press <strong>Enter</strong> to send. All write operations trigger an application approval card before mutating database state.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Live Activity & Tool Inspector Drawer -->
+        <aside class="chat-sidebar">
+          <div class="sidebar-header">
+            <h3>🛠️ MCP Tool Activity Pipeline</h3>
+            <span class="sub-badge" id="last-tool-count">0 tools</span>
+          </div>
+          <div class="sidebar-body" id="sidebar-tool-activity">
+            <div class="empty-state">
+              <p>No tools invoked yet in this session.</p>
+              <small>When you ask the agent a question, the registered MCP tools invoked will appear here in real time.</small>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- TAB 2: BUSINESS HUB (DATA EXPLORER) -->
+    <section id="tab-data" class="tab-content">
+      <div class="data-hub-container">
+        <!-- Metric Stats Bar -->
+        <div class="stats-grid" id="stats-overview">
+          <div class="stat-card">
+            <div class="stat-label">Total Clients</div>
+            <div class="stat-value" id="stat-clients">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Projects</div>
+            <div class="stat-value" id="stat-projects">-</div>
+          </div>
+          <div class="stat-card stat-warning">
+            <div class="stat-label">Overdue Invoices</div>
+            <div class="stat-value" id="stat-overdue-count">-</div>
+          </div>
+          <div class="stat-card stat-danger">
+            <div class="stat-label">Total Overdue Amount</div>
+            <div class="stat-value" id="stat-overdue-amount">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open Tasks</div>
+            <div class="stat-value" id="stat-tasks">-</div>
+          </div>
+        </div>
+
+        <!-- Data Subtabs Navigation -->
+        <div class="subtabs-header">
+          <button class="subtab-btn active" data-subtab="subtab-invoices">🧾 Invoices</button>
+          <button class="subtab-btn" data-subtab="subtab-projects">📁 Projects</button>
+          <button class="subtab-btn" data-subtab="subtab-clients">🏢 Clients</button>
+          <button class="subtab-btn" data-subtab="subtab-tasks">📌 Tasks</button>
+          <button class="subtab-btn" data-subtab="subtab-documents">📄 Documents</button>
+        </div>
+
+        <!-- Subtab Content: Invoices -->
+        <div id="subtab-invoices" class="subtab-pane active">
+          <div class="table-card">
+            <div class="table-card-header">
+              <h3>All Invoices</h3>
+              <div class="table-actions">
+                <select id="filter-invoice-status" class="form-select">
+                  <option value="all">All Statuses</option>
+                  <option value="overdue">Overdue</option>
+                  <option value="unpaid">Unpaid</option>
+                  <option value="paid">Paid</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="table-invoices">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Client</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Injected via JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtab Content: Projects -->
+        <div id="subtab-projects" class="subtab-pane">
+          <div class="table-card">
+            <div class="table-card-header">
+              <h3>Enterprise Projects</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="table-projects">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Project Name</th>
+                    <th>Client</th>
+                    <th>Status</th>
+                    <th>Budget</th>
+                    <th>Timeline</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Injected via JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtab Content: Clients -->
+        <div id="subtab-clients" class="subtab-pane">
+          <div class="table-card">
+            <div class="table-card-header">
+              <h3>Clients & Accounts</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="table-clients">
+                <thead>
+                  <tr>
+                    <th>Client Name</th>
+                    <th>Industry</th>
+                    <th>Tier</th>
+                    <th>Status</th>
+                    <th>Primary Contact</th>
+                    <th>Email / Phone</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Injected via JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtab Content: Tasks -->
+        <div id="subtab-tasks" class="subtab-pane">
+          <div class="table-card">
+            <div class="table-card-header">
+              <h3>Operational Tasks</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="table-tasks">
+                <thead>
+                  <tr>
+                    <th>Task Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Client</th>
+                    <th>Project</th>
+                    <th>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Injected via JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subtab Content: Documents -->
+        <div id="subtab-documents" class="subtab-pane">
+          <div class="table-card">
+            <div class="table-card-header">
+              <h3>Document Repository</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="table-documents">
+                <thead>
+                  <tr>
+                    <th>Document Title</th>
+                    <th>Type</th>
+                    <th>Client</th>
+                    <th>File Path</th>
+                    <th>Summary</th>
+                  </tr>
+                </thead>
+                <tbody><!-- Injected via JS --></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PENDING APPROVALS QUEUE -->
+    <section id="tab-approvals" class="tab-content">
+      <div class="approvals-container">
+        <div class="section-header">
+          <div>
+            <h2>⏳ Pending Write Operations Queue</h2>
+            <p>All tool actions that mutate the database require authenticated approval before execution.</p>
+          </div>
+          <div class="filter-group">
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-approvals">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div id="approvals-list" class="approvals-grid">
+          <!-- Pending approvals injected here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: AUDIT LOGS EXPLORER -->
+    <section id="tab-audit" class="tab-content">
+      <div class="audit-container">
+        <div class="section-header">
+          <div>
+            <h2>📜 System Audit Trail</h2>
+            <p>Immutable record of every MCP tool invocation, read query, proposed write action, approval, and execution outcome.</p>
+          </div>
+        </div>
+
+        <div class="audit-filters-bar">
+          <input type="text" id="audit-filter-search" class="form-input" placeholder="Search arguments, errors, entity IDs...">
+          <select id="audit-filter-tool" class="form-select">
+            <option value="all">All Tools</option>
+            <option value="list_overdue_invoices">list_overdue_invoices</option>
+            <option value="get_invoice_details">get_invoice_details</option>
+            <option value="get_project_status">get_project_status</option>
+            <option value="list_projects">list_projects</option>
+            <option value="list_open_tasks">list_open_tasks</option>
+            <option value="search_clients">search_clients</option>
+            <option value="get_client_details">get_client_details</option>
+            <option value="create_followup_task">create_followup_task</option>
+            <option value="update_project_status">update_project_status</option>
+            <option value="add_client_note">add_client_note</option>
+          </select>
+          <select id="audit-filter-outcome" class="form-select">
+            <option value="all">All Outcomes</option>
+            <option value="success">Success (Read)</option>
+            <option value="proposed">Proposed (Write)</option>
+            <option value="approved_executed">Approved & Executed</option>
+            <option value="rejected">Rejected</option>
+            <option value="failure">Failure</option>
+          </select>
+          <button id="btn-apply-audit-filter" class="btn btn-primary btn-sm">Filter</button>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="data-table" id="table-audit-logs">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>User</th>
+                  <th>Role</th>
+                  <th>Tool</th>
+                  <th>Target Entity</th>
+                  <th>Outcome</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody><!-- Injected via JS --></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for JSON / Audit Details Inspection -->
+  <div id="inspector-modal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-title">Inspection Details</h3>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre id="modal-json-content"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
